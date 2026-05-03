@@ -1,4 +1,4 @@
-// Sidebar & Modal Toggles
+// Sidebar Toggles
 function toggleSidebar() {
     const sidebar = document.getElementById('sidebar');
     const mainContent = document.getElementById('mainContent');
@@ -19,8 +19,9 @@ function toggleSidebar() {
     }
 }
 
-function toggleModal() { 
-    const modal = document.getElementById('modal') || document.getElementById('leadModal');
+// THE FIX: Explicitly target the exact modal by its ID
+function toggleModal(modalId) { 
+    const modal = document.getElementById(modalId);
     if (modal) modal.classList.toggle('hidden'); 
 }
 
@@ -29,7 +30,40 @@ function logout() {
     location.href = '/'; 
 }
 
-// Global UI Initialization
+// Staggered Animations
+function applyStaggeredAnimations(selector) {
+    const elements = document.querySelectorAll(selector);
+    elements.forEach((el, index) => {
+        el.style.animationDelay = `${index * 0.05}s`; 
+        el.classList.add('animate-stagger');
+    });
+}
+
+// Client-Side Table Filtering
+function filterTable(tableId, searchInputId) {
+    const input = document.getElementById(searchInputId).value.toLowerCase();
+    const rows = document.querySelectorAll(`#${tableId} tr`);
+    
+    rows.forEach(row => {
+        const text = row.innerText.toLowerCase();
+        row.style.display = text.includes(input) ? '' : 'none';
+    });
+}
+
+// Toast Notifications
+function showToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'fixed bottom-5 right-5 bg-gray-900 text-white px-6 py-3 rounded-xl shadow-2xl z-50 text-sm font-medium animate-stagger flex items-center gap-2';
+    toast.innerHTML = `<i class="ph-fill ph-check-circle text-green-400 text-lg"></i> ${message}`;
+    document.body.appendChild(toast);
+    setTimeout(() => { 
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(10px)';
+        toast.style.transition = 'all 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const bName = document.getElementById('bName');
     const dateDisplay = document.getElementById('dateDisplay');
@@ -37,13 +71,3 @@ document.addEventListener('DOMContentLoaded', () => {
     if (bName) bName.innerText = localStorage.getItem('branchName') || 'Academy';
     if (dateDisplay) dateDisplay.innerText = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 });
-
-// Add this helper function at the top of script.js
-function applyStaggeredAnimations(selector) {
-    const elements = document.querySelectorAll(selector);
-    elements.forEach((el, index) => {
-        // Add a 50ms delay between each row/card animating in
-        el.style.animationDelay = `${index * 0.05}s`; 
-        el.classList.add('animate-stagger');
-    });
-}
