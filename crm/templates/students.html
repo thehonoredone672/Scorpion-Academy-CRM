@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Students | Scorpion CRM</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="bg-white text-gray-900 flex h-screen overflow-hidden">
+
+    <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-20 hidden transition-opacity duration-300 opacity-0 md:hidden"></div>
+
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-30 w-[260px] bg-[#171717] text-gray-300 flex flex-col justify-between transition-transform duration-300 ease-in-out shadow-2xl md:shadow-none">
+        <div class="p-4">
+            <div class="flex items-center justify-between mb-8 px-2 mt-2">
+                <div class="flex items-center gap-3">
+                    <div class="h-8 w-8 bg-white text-black rounded-lg flex items-center justify-center shadow-sm"><i class="ph-fill ph-sword"></i></div>
+                    <div><h2 class="text-sm font-bold tracking-tight text-white">Scorpion</h2></div>
+                </div>
+                <button onclick="toggleSidebar()" class="md:hidden p-2 rounded-md hover:bg-[#212121] text-gray-400 hover:text-white transition-colors"><i class="ph ph-x text-lg"></i></button>
+            </div>
+            <nav class="space-y-1">
+                <a href="/dashboard" class="flex items-center gap-3 px-3 py-2.5 hover:bg-[#212121] text-gray-300 hover:text-white rounded-lg font-medium text-sm transition-colors"><i class="ph ph-squares-four text-lg"></i> Dashboard</a>
+                <a href="/leads" class="flex items-center gap-3 px-3 py-2.5 hover:bg-[#212121] text-gray-300 hover:text-white rounded-lg font-medium text-sm transition-colors"><i class="ph ph-user-plus text-lg"></i> Enquiries</a>
+                <a href="/students" class="flex items-center gap-3 px-3 py-2.5 bg-[#212121] text-white rounded-lg font-medium text-sm transition-colors"><i class="ph ph-users-three text-lg"></i> Students</a>
+            </nav>
+        </div>
+        <div class="p-4">
+            <button onclick="logout()" class="flex items-center gap-3 px-3 py-2.5 hover:bg-[#212121] text-gray-300 hover:text-white rounded-lg font-medium text-sm transition-colors w-full"><i class="ph ph-sign-out text-lg"></i> Sign Out</button>
+        </div>
+    </aside>
+
+    <main id="mainContent" class="flex-1 flex flex-col h-screen overflow-hidden relative w-full transition-all duration-300 bg-gray-50">
+        
+        <!-- THE NEW CHATGPT-STYLE NAVBAR -->
+        <header class="bg-white border-b border-gray-100 h-14 flex items-center justify-between px-4 shrink-0 z-10">
+            <div class="flex items-center gap-3">
+                <button onclick="toggleSidebar()" title="Toggle Sidebar" class="p-2 rounded-md text-gray-500 hover:bg-gray-100 transition-colors focus:outline-none flex items-center justify-center">
+                    <i class="ph ph-sidebar-simple text-xl"></i>
+                </button>
+                <h1 class="text-lg font-semibold text-gray-800">Active Roster</h1>
+            </div>
+            <button onclick="toggleModal()" class="bg-black text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-800 transition-all shadow-sm flex items-center gap-2 text-sm"><i class="ph-bold ph-plus"></i> Register</button>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-6 md:p-8">
+            <div class="max-w-5xl mx-auto bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse min-w-[600px]">
+                        <thead class="bg-gray-50 border-b border-gray-200">
+                            <tr class="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                <th class="px-6 py-4">Student Profile</th>
+                                <th class="px-6 py-4">Belt Rank</th>
+                                <th class="px-6 py-4">Contact</th>
+                                <th class="px-6 py-4 text-right">Manage</th>
+                            </tr>
+                        </thead>
+                        <tbody id="studentList" class="divide-y divide-gray-100 text-sm">
+                            <!-- Rendered by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- (Modal unchanged, make sure to copy your existing modal HTML here!) -->
+
+    <script src="{% static 'js/script.js' %}"></script>
+    <script>
+        async function fetchStudents() {
+            const res = await fetch('/api/students', { headers: {'Authorization': localStorage.getItem('token')} });
+            if(res.status === 401) { logout(); return; }
+            const students = await res.json();
+            
+            document.getElementById('studentList').innerHTML = students.map(s => `
+                <tr class="hover:bg-gray-50 transition-colors group">
+                    <td class="px-6 py-4 flex items-center gap-4">
+                        <div class="h-8 w-8 rounded-full bg-black text-white flex items-center justify-center font-bold text-xs">${s.name.charAt(0)}</div>
+                        <div class="font-semibold text-gray-900">${s.name}</div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="px-2.5 py-1 bg-white text-gray-700 font-medium text-xs rounded-md border border-gray-200 inline-flex items-center gap-2">
+                            <div class="h-1.5 w-1.5 rounded-full" style="background-color: ${s.beltRank === 'White' ? '#d1d5db' : s.beltRank.toLowerCase()}"></div> ${s.beltRank}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-gray-500 text-sm">${s.phone || 'N/A'}</td>
+                    <td class="px-6 py-4 text-right">
+                        <button class="p-2 rounded-md text-gray-400 hover:bg-gray-100 hover:text-black transition flex items-center justify-center ml-auto"><i class="ph-bold ph-dots-three text-lg"></i></button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Keep your existing addStudentForm onsubmit logic here!
+        fetchStudents();
+    </script>
+</body>
+</html>
