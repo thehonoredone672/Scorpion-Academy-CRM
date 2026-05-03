@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-white text-black font-sans">
+    <div class="flex flex-col md:flex-row h-screen">
+        <!-- Minimal Sidebar -->
+        <nav class="w-full md:w-64 bg-black text-white p-8 space-y-8">
+            <h2 class="text-2xl font-black italic">DOJO/CRM</h2>
+            <div class="space-y-4">
+                <a href="dashboard.html" class="block text-sm font-bold opacity-100">DASHBOARD</a>
+                <a href="students.html" class="block text-sm font-bold opacity-50 hover:opacity-100">STUDENTS</a>
+                <a href="leads.html" class="block text-sm font-bold opacity-50 hover:opacity-100">ENQUIRIES</a>
+            </div>
+        </nav>
+
+        <!-- Content -->
+        <main class="flex-1 p-8 lg:p-16 overflow-y-auto">
+            <header class="mb-12">
+                <h1 class="text-5xl font-black tracking-tighter uppercase">Overview</h1>
+            </header>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="border-2 border-black p-8">
+                    <p class="text-xs font-black text-gray-400 uppercase">Active Students</p>
+                    <h3 id="totalStudents" class="text-6xl font-black mt-2">--</h3>
+                </div>
+                <div class="border-2 border-black p-8">
+                    <p class="text-xs font-black text-gray-400 uppercase">New Enquiries</p>
+                    <h3 id="activeLeads" class="text-6xl font-black mt-2">--</h3>
+                </div>
+                <div class="border-2 border-black p-8">
+                    <p class="text-xs font-black text-gray-400 uppercase">Fees Pending</p>
+                    <h3 id="pendingFees" class="text-6xl font-black mt-2 text-red-500">--</h3>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        async function loadStats() {
+            const res = await fetch('/api/stats', {
+                headers: {'Authorization': localStorage.getItem('token')}
+            });
+            const data = await res.json();
+            document.getElementById('totalStudents').innerText = data.totalStudents;
+            document.getElementById('activeLeads').innerText = data.activeLeads;
+            document.getElementById('pendingFees').innerText = data.pendingFees;
+        }
+        loadStats();
+    </script>
+</body>
+</html>

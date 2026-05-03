@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enquiries | Scorpion Academy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body class="bg-white text-black font-sans">
+    <div class="flex h-screen overflow-hidden">
+        <!-- Minimal Sidebar -->
+        <aside class="w-64 bg-black text-white p-8 hidden lg:flex flex-col justify-between">
+            <div>
+                <h2 class="text-2xl font-black italic mb-12">SCORPION.</h2>
+                <nav class="space-y-6">
+                    <a href="dashboard.html" class="block text-sm opacity-50">DASHBOARD</a>
+                    <a href="leads.html" class="block text-sm font-bold">ENQUIRIES</a>
+                    <a href="students.html" class="block text-sm opacity-50">STUDENTS</a>
+                </nav>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="flex-1 p-6 lg:p-12 overflow-y-auto">
+            <div class="max-w-5xl mx-auto">
+                <div class="flex justify-between items-end mb-12 border-b-4 border-black pb-6">
+                    <div>
+                        <h1 class="text-5xl font-black uppercase tracking-tighter">Enquiries</h1>
+                        <p class="text-gray-400 mt-2 font-medium">Capture every potential student.</p>
+                    </div>
+                    <button onclick="toggleModal()" class="bg-black text-white px-8 py-4 font-bold hover:bg-gray-900 transition text-sm">
+                        + ADD NEW LEAD
+                    </button>
+                </div>
+
+                <!-- Leads Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left">
+                        <thead>
+                            <tr class="border-b-2 border-black text-xs font-black uppercase">
+                                <th class="py-4">Student/Parent</th>
+                                <th class="py-4">Program</th>
+                                <th class="py-4">Status</th>
+                                <th class="py-4 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leadsList" class="divide-y divide-gray-100">
+                            <!-- JS will inject leads here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Minimal Add Lead Modal -->
+    <div id="leadModal" class="fixed inset-0 bg-black/80 hidden z-50 flex items-center justify-center p-4">
+        <div class="bg-white w-full max-w-md p-10 border-4 border-black">
+            <h2 class="text-3xl font-black uppercase mb-6 italic">New Lead</h2>
+            <form id="addLeadForm" class="space-y-4">
+                <input type="text" id="name" placeholder="Full Name *" class="w-full p-4 border-2 border-black focus:bg-gray-50 outline-none" required>
+                <input type="text" id="phone" placeholder="Phone Number *" class="w-full p-4 border-2 border-black outline-none" required>
+                <select id="program" class="w-full p-4 border-2 border-black font-bold outline-none">
+                    <option value="Karate">Karate</option>
+                    <option value="Silambam">Silambam</option>
+                    <option value="Yoga">Yoga</option>
+                </select>
+                <button type="submit" class="w-full bg-black text-white p-5 font-black uppercase tracking-widest hover:bg-gray-800 transition">
+                    Save Enquiry
+                </button>
+                <button type="button" onclick="toggleModal()" class="w-full text-xs font-bold uppercase opacity-50">Cancel</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function toggleModal() {
+            document.getElementById('leadModal').classList.toggle('hidden');
+        }
+
+        async function fetchLeads() {
+            const res = await fetch('/api/leads', {
+                headers: { 'Authorization': localStorage.getItem('token') }
+            });
+            const leads = await res.json();
+            const list = document.getElementById('leadsList');
+            list.innerHTML = leads.map(l => `
+                <tr class="text-sm border-b border-gray-50 hover:bg-gray-50 transition">
+                    <td class="py-6">
+                        <div class="font-black text-lg">${l.name}</div>
+                        <div class="text-gray-400 font-bold">${l.phone}</div>
+                    </td>
+                    <td class="py-6 font-bold uppercase text-xs tracking-widest">${l.program}</td>
+                    <td class="py-6"><span class="bg-black text-white px-2 py-1 text-[10px] font-black uppercase">${l.status}</span></td>
+                    <td class="py-6 text-right">
+                        <a href="https://wa.me/${l.phone}" class="text-2xl hover:text-green-600 transition"><i class="fa-brands fa-whatsapp"></i></a>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        document.getElementById('addLeadForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const payload = {
+                name: document.getElementById('name').value,
+                phone: document.getElementById('phone').value,
+                program: document.getElementById('program').value
+            };
+            await fetch('/api/leads', {
+                method: 'POST',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': localStorage.getItem('token')
+                },
+                body: JSON.stringify(payload)
+            });
+            toggleModal();
+            fetchLeads();
+        };
+
+        fetchLeads();
+    </script>
+</body>
+</html>

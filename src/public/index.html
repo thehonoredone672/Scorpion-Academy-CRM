@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-white h-screen flex items-center justify-center p-6">
+    <div class="w-full max-w-sm">
+        <h1 class="text-4xl font-black italic tracking-tighter mb-8 text-center uppercase">Dojo Login</h1>
+        <form id="loginForm" class="space-y-4">
+            <input type="text" id="slug" placeholder="Branch ID (e.g. chennai-south)" class="w-full p-4 border border-black focus:outline-none" required>
+            <input type="password" id="password" placeholder="Password" class="w-full p-4 border border-black focus:outline-none" required>
+            <button type="submit" class="w-full bg-black text-white p-4 font-bold hover:opacity-90 transition">ENTER</button>
+        </form>
+    </div>
+    <script>
+        document.getElementById('loginForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const res = await fetch('/api/login', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({ slug: document.getElementById('slug').value, password: document.getElementById('password').value })
+            });
+            const data = await res.json();
+            if(data.token) {
+                localStorage.setItem('token', data.token);
+                location.href = '/dashboard.html';
+            } else { alert(data.error); }
+        };
+    </script>
+</body>
+</html>
