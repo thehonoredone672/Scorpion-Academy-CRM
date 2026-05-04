@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Students | Scorpion CRM</title>
+    <title>Students | Scorpion Academy</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
@@ -12,8 +12,8 @@
 </head>
 <body class="bg-white text-gray-900 flex h-screen overflow-hidden">
 
-    <!-- Keep existing Sidebar HTML -->
     <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-20 hidden transition-opacity duration-300 opacity-0 md:hidden"></div>
+
     <aside id="sidebar" class="fixed inset-y-0 left-0 z-30 w-[260px] bg-[#171717] text-gray-300 flex flex-col justify-between transition-transform duration-300 ease-in-out shadow-2xl md:shadow-none">
         <div class="p-4">
             <div class="flex items-center justify-between mb-8 px-2 mt-2">
@@ -31,18 +31,18 @@
 
     <main id="mainContent" class="flex-1 flex flex-col h-screen overflow-hidden relative w-full transition-all duration-300 bg-gray-50">
         
+        <!-- NEW SCORPION ACADEMY HEADER -->
         <header class="bg-white border-b border-gray-100 h-14 flex items-center justify-between px-4 shrink-0 z-10">
             <div class="flex items-center gap-3">
                 <button onclick="toggleSidebar()" class="p-2 rounded-md text-gray-500 hover:bg-gray-100 transition-colors"><i class="ph ph-sidebar-simple text-xl"></i></button>
-                <h1 class="text-lg font-semibold text-gray-800">Active Roster</h1>
+                <h1 class="text-lg font-bold text-gray-900 tracking-tight">Scorpion Academy <span class="text-gray-400 font-normal">/ Active Roster</span></h1>
             </div>
-            <button onclick="toggleModal('modal')" class="bg-black text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-800 transition-all shadow-sm flex items-center gap-2 text-sm"><i class="ph-bold ph-plus"></i> Register</button>
+            <button onclick="toggleModal('studentModal')" class="bg-black text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-800 transition-all shadow-sm flex items-center gap-2 text-sm"><i class="ph-bold ph-plus"></i> Register</button>
         </header>
 
         <div class="flex-1 overflow-y-auto p-6 md:p-8">
             <div class="max-w-5xl mx-auto space-y-4">
                 
-                <!-- NEW: Toolbar (Search) -->
                 <div class="flex flex-col sm:flex-row gap-4 justify-between items-center bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
                     <div class="relative w-full sm:w-72">
                         <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
@@ -50,7 +50,6 @@
                     </div>
                 </div>
 
-                <!-- Table -->
                 <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
                     <div class="overflow-x-auto">
                         <table class="w-full text-left border-collapse min-w-[600px]">
@@ -72,13 +71,45 @@
         </div>
     </main>
 
-    <!-- Keep existing Modal HTML -->
-    <div id="modal" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4 transition-opacity">
-        <!-- ... Your Modal Form ... -->
+    <!-- REGISTER STUDENT MODAL -->
+    <div id="studentModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4 transition-opacity">
+        <div class="bg-white w-full max-w-lg p-8 rounded-3xl shadow-2xl">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-xl font-bold text-gray-900">Register Member</h2>
+                <button onclick="toggleModal('studentModal')" class="p-2 text-gray-400 hover:bg-gray-100 rounded-lg transition"><i class="ph-bold ph-x"></i></button>
+            </div>
+            <form id="addStudentForm" class="space-y-4">
+                <div><label class="block text-xs font-bold text-gray-500 mb-1.5 uppercase">Student Name</label><input type="text" id="sName" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-black outline-none" required></div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-500 mb-1.5 uppercase">Initial Rank</label>
+                        <select id="sRank" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-black outline-none"><option>White</option><option>Yellow</option><option>Orange</option><option>Green</option><option>Blue</option><option>Brown</option><option>Black</option></select>
+                    </div>
+                    <div><label class="block text-xs font-bold text-gray-500 mb-1.5 uppercase">Phone</label><input type="text" id="sPhone" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-black outline-none" required></div>
+                </div>
+                <button type="submit" class="w-full bg-black text-white p-3 rounded-xl font-medium hover:bg-gray-800 transition-all mt-2 shadow-sm">Complete Registration</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- CUSTOM DELETE CONFIRMATION MODAL -->
+    <div id="deleteModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4 transition-opacity">
+        <div class="bg-white w-full max-w-sm p-6 rounded-3xl shadow-2xl text-center">
+            <div class="h-16 w-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl"><i class="ph-fill ph-warning-circle"></i></div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Delete Student?</h3>
+            <p class="text-sm text-gray-500 mb-6">This action cannot be undone. Are you sure you want to permanently remove this student from the roster?</p>
+            <div class="flex gap-3">
+                <button onclick="closeDeleteModal()" class="flex-1 py-2.5 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors">Cancel</button>
+                <button onclick="executeDelete()" class="flex-1 py-2.5 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600 transition-colors shadow-sm">Yes, Delete</button>
+            </div>
+        </div>
     </div>
 
     <script src="{% static 'js/script.js' %}"></script>
     <script>
+        let targetStudentId = null;
+        let targetRow = null;
+
         async function fetchStudents() {
             const res = await fetch('/api/students', { headers: {'Authorization': localStorage.getItem('token')} });
             if(res.status === 401) { logout(); return; }
@@ -98,8 +129,8 @@
                     <td class="px-6 py-4 text-gray-500 text-sm">${s.phone || 'N/A'}</td>
                     <td class="px-6 py-4 text-right">
                         <div class="flex justify-end gap-2">
-                            <button onclick="showToast('Edit mode activated.')" class="p-2 rounded-md text-gray-400 hover:bg-gray-100 hover:text-blue-600 transition" title="Edit Student"><i class="ph-bold ph-pencil-simple text-lg"></i></button>
-                            <button onclick="deleteStudent(this)" class="p-2 rounded-md text-gray-400 hover:bg-red-50 hover:text-red-600 transition" title="Remove Student"><i class="ph-bold ph-trash text-lg"></i></button>
+                            <button onclick="showToast('Edit feature coming soon.')" class="p-2 rounded-md text-gray-400 hover:bg-gray-100 hover:text-blue-600 transition"><i class="ph-bold ph-pencil-simple text-lg"></i></button>
+                            <button onclick="triggerDelete(this, ${s.id})" class="p-2 rounded-md text-gray-400 hover:bg-red-50 hover:text-red-600 transition"><i class="ph-bold ph-trash text-lg"></i></button>
                         </div>
                     </td>
                 </tr>
@@ -108,15 +139,51 @@
             applyStaggeredAnimations('#studentList tr');
         }
 
-        function deleteStudent(btn) {
-            if(confirm("Remove this student from the active roster?")) {
-                const row = btn.closest('tr');
-                row.style.opacity = '0';
-                setTimeout(() => row.remove(), 300);
-                showToast("Student removed.");
-                // In the future: Add fetch('/api/students/delete', { method: 'DELETE'... }) here
-            }
+        // --- DELETE LOGIC ---
+        function triggerDelete(btn, studentId) {
+            targetStudentId = studentId;
+            targetRow = btn.closest('tr');
+            toggleModal('deleteModal'); // Open custom UI
         }
+
+        function closeDeleteModal() {
+            toggleModal('deleteModal');
+            targetStudentId = null;
+            targetRow = null;
+        }
+
+        async function executeDelete() {
+            if(!targetStudentId) return;
+            closeDeleteModal(); // Hide modal
+            targetRow.style.opacity = '0'; // Fade out UI
+
+            // Tell Django backend to delete
+            await fetch(`/api/students/${targetStudentId}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': localStorage.getItem('token') }
+            });
+
+            setTimeout(() => targetRow.remove(), 300);
+            showToast("Student permanently removed.");
+        }
+
+        // --- ADD STUDENT LOGIC ---
+        document.getElementById('addStudentForm').onsubmit = async (e) => {
+            e.preventDefault();
+            await fetch('/api/students', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('token')},
+                body: JSON.stringify({ 
+                    name: document.getElementById('sName').value, 
+                    beltRank: document.getElementById('sRank').value, 
+                    phone: document.getElementById('sPhone').value 
+                })
+            });
+            toggleModal('studentModal');
+            showToast("Student registered successfully!");
+            fetchStudents(); // Refresh the table
+            e.target.reset();
+        };
 
         fetchStudents();
     </script>
