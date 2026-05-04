@@ -71,3 +71,42 @@ def stats_api(request):
         'activeLeads': active_leads,
         'pendingFees': 0 
     })
+
+
+# Add this to the bottom of crm/views.py
+from django.views.decorators.http import require_http_methods
+
+@csrf_exempt
+def lead_detail_api(request, lead_id):
+    # This checks the token to make sure the user is logged in
+    token = request.headers.get('Authorization')
+    if not token: return JsonResponse({'error': 'Unauthorized'}, status=401)
+
+    try:
+        lead = Lead.objects.get(id=lead_id)
+        
+        # Handle the PUT request to update the status
+        if request.method == 'PUT':
+            data = json.loads(request.body)
+            lead.status = data.get('status', lead.status)
+            lead.save()
+            return JsonResponse({'message': 'Lead updated successfully'})
+            
+    except Lead.DoesNotExist:
+        return JsonResponse({'error': 'Lead not found'}, status=404)
+
+@csrf_exempt
+def student_detail_api(request, student_id):
+    token = request.headers.get('Authorization')
+    if not token: return JsonResponse({'error': 'Unauthorized'}, status=401)
+
+    try:
+        student = Student.objects.get(id=student_id)
+        
+        # Handle the DELETE request to remove a student
+        if request.method == 'DELETE':
+            student.delete()
+            return JsonResponse({'message': 'Student deleted successfully'})
+            
+    except Student.DoesNotExist:
+        return JsonResponse({'error': 'Student not found'}, status=404)
