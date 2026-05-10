@@ -6,3 +6,6 @@ djangorestframework
 whitenoise
 dj-database-url
 psycopg2-binary
+djongo
+pymongo
+dnspython
