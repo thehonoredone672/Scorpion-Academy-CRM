@@ -21,7 +21,7 @@ class Command(BaseCommand):
         self.stdout.write('Creating Branch...')
         # THE FIX: Explicitly add "id": 1 so Django's API can see it
         branch_col.insert_one({
-            "id": 1,  # <--- Django needs this!
+            "id": 1,  # <--- Django needs this! 
             "name": "Scorpion Academy", 
             "slug": "coimbatore-main", 
             "password": "dojo123", 
