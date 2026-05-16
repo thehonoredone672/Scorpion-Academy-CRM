@@ -71,3 +71,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if (bName) bName.innerText = localStorage.getItem('branchName') || 'Academy';
     if (dateDisplay) dateDisplay.innerText = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+    const bName = document.getElementById('bName');
+    const dateDisplay = document.getElementById('dateDisplay');
+    
+    if (bName) bName.innerText = localStorage.getItem('branchName') || 'Academy';
+    if (dateDisplay) dateDisplay.innerText = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+
+    // --- NEW: DYNAMICALLY HIDE ADMIN MENU ---
+    const role = localStorage.getItem('role');
+    const adminMenu = document.getElementById('adminMenu');
+    
+    // If they are not an Admin Master, hide the Administration sidebar section completely
+    if (role !== 'Admin Master' && adminMenu) {
+        adminMenu.style.display = 'none';
+    }
+});
