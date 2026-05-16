@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Team Access | Scorpion Academy</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body class="bg-white text-gray-900 flex h-screen overflow-hidden">
+
+    <script>
+        if (localStorage.getItem('role') !== 'Admin Master') {
+            window.location.href = '/dashboard';
+        }
+    </script>
+
+    <div id="sidebarOverlay" onclick="toggleSidebar()" class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm z-20 hidden transition-opacity duration-300 opacity-0 md:hidden"></div>
+
+    <aside id="sidebar" class="fixed inset-y-0 left-0 z-30 w-[260px] bg-[#171717] text-gray-300 flex flex-col justify-between transition-transform duration-300 ease-in-out shadow-2xl md:shadow-none">
+        <div class="p-4">
+            <div class="flex items-center justify-between mb-8 px-2 mt-2">
+                <div class="flex items-center gap-3"><div class="h-8 w-8 bg-white text-black rounded-lg flex items-center justify-center shadow-sm"><i class="ph-fill ph-sword"></i></div><div><h2 class="text-sm font-bold tracking-tight text-white">Scorpion</h2></div></div>
+                <button onclick="toggleSidebar()" class="md:hidden p-2 rounded-md hover:bg-[#212121] text-gray-400 hover:text-white transition-colors"><i class="ph ph-x text-lg"></i></button>
+            </div>
+            
+            <nav class="space-y-1">
+                <p class="px-3 text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2 mt-4">Core</p>
+                <a href="/dashboard" class="flex items-center gap-3 px-3 py-2.5 hover:bg-[#212121] text-gray-300 hover:text-white rounded-lg font-medium text-sm transition-colors"><i class="ph ph-squares-four text-lg"></i> Dashboard</a>
+                <a href="/leads" class="flex items-center gap-3 px-3 py-2.5 hover:bg-[#212121] text-gray-300 hover:text-white rounded-lg font-medium text-sm transition-colors"><i class="ph ph-user-plus text-lg"></i> Enquiries</a>
+                <a href="/students" class="flex items-center gap-3 px-3 py-2.5 hover:bg-[#212121] text-gray-300 hover:text-white rounded-lg font-medium text-sm transition-colors"><i class="ph ph-users-three text-lg"></i> Students</a>
+                
+                <div id="adminMenu">
+                    <p class="px-3 text-[10px] font-bold text-gray-500 uppercase tracking-widest mb-2 mt-6">Administration</p>
+                    <a href="/team" class="flex items-center gap-3 px-3 py-2.5 hover:bg-[#212121] text-gray-300 hover:text-white rounded-lg font-medium text-sm transition-colors"><i class="ph ph-shield-star text-lg"></i> Team Access</a>
+                </div>
+            </nav>
+        </div>
+        <div class="p-4"><button onclick="logout()" class="flex items-center gap-3 px-3 py-2.5 hover:bg-[#212121] text-gray-300 hover:text-white rounded-lg font-medium text-sm transition-colors w-full"><i class="ph ph-sign-out text-lg"></i> Sign Out</button></div>
+    </aside>
+
+    <main id="mainContent" class="flex-1 flex flex-col h-screen overflow-hidden relative w-full transition-all duration-300 bg-gray-50">
+        
+        <header class="bg-white border-b border-gray-100 h-14 flex items-center justify-between px-4 shrink-0 z-10">
+            <div class="flex items-center gap-3">
+                <button onclick="toggleSidebar()" class="p-2 rounded-md text-gray-500 hover:bg-gray-100 transition-colors"><i class="ph ph-sidebar-simple text-xl"></i></button>
+                <h1 class="text-lg font-bold text-gray-900 tracking-tight">Scorpion Academy <span class="text-gray-400 font-normal">/ Team</span></h1>
+            </div>
+            <button onclick="toggleModal('staffModal')" class="bg-black text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-800 transition-all shadow-sm flex items-center gap-2 text-sm"><i class="ph-bold ph-plus"></i> Add User</button>
+        </header>
+
+        <div class="flex-1 overflow-y-auto p-6 md:p-8">
+            <div class="max-w-5xl mx-auto space-y-4">
+                
+                <div class="flex flex-col sm:flex-row gap-4 justify-between items-center bg-white p-4 rounded-2xl border border-gray-200 shadow-sm">
+                    <div class="relative w-full sm:w-72">
+                        <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                        <input type="text" id="searchStaff" onkeyup="filterTable('staffList', 'searchStaff')" placeholder="Search team members..." class="w-full pl-9 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-black outline-none transition-all">
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse min-w-[600px]">
+                            <thead class="bg-gray-50 border-b border-gray-200">
+                                <tr class="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                                    <th class="px-6 py-4">Team Member</th>
+                                    <th class="px-6 py-4">Username</th>
+                                    <th class="px-6 py-4">System Role</th>
+                                    <th class="px-6 py-4 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="staffList" class="divide-y divide-gray-100 text-sm">
+                                </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <div id="staffModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4 transition-opacity">
+        <div class="bg-white w-full max-w-lg p-8 rounded-3xl shadow-2xl">
+            <div class="flex justify-between items-center mb-8">
+                <h2 class="text-xl font-bold text-gray-900">Add Team Member</h2>
+                <button onclick="toggleModal('staffModal')" class="p-2 text-gray-400 hover:bg-gray-100 rounded-lg transition"><i class="ph-bold ph-x"></i></button>
+            </div>
+            <form id="addStaffForm" class="space-y-4">
+                <div><label class="block text-xs font-bold text-gray-500 mb-1.5 uppercase">Full Name</label><input type="text" id="stName" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-black outline-none" required></div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="block text-xs font-bold text-gray-500 mb-1.5 uppercase">Username</label><input type="text" id="stUsername" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-black outline-none" required></div>
+                    <div><label class="block text-xs font-bold text-gray-500 mb-1.5 uppercase">Password</label><input type="password" id="stPassword" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-black outline-none" required></div>
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-500 mb-1.5 uppercase">System Role</label>
+                    <select id="stRole" class="w-full p-3 bg-gray-50 rounded-xl border border-gray-200 text-sm focus:ring-2 focus:ring-black outline-none">
+                        <option value="Master">Master (Can view/add data)</option>
+                        <option value="Admin Master">Admin Master (Full Control)</option>
+                    </select>
+                </div>
+                <button type="submit" class="w-full bg-black text-white p-3 rounded-xl font-medium hover:bg-gray-800 transition-all mt-2 shadow-sm">Create Account</button>
+            </form>
+        </div>
+    </div>
+
+    <div id="deleteModal" class="fixed inset-0 bg-black/40 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4 transition-opacity">
+        <div class="bg-white w-full max-w-sm p-6 rounded-3xl shadow-2xl text-center">
+            <div class="h-16 w-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl"><i class="ph-fill ph-warning-circle"></i></div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Remove Access?</h3>
+            <p class="text-sm text-gray-500 mb-6">This user will immediately lose access to the system. This cannot be undone.</p>
+            <div class="flex gap-3">
+                <button onclick="closeDeleteModal()" class="flex-1 py-2.5 bg-gray-100 text-gray-700 rounded-xl font-medium hover:bg-gray-200 transition-colors">Cancel</button>
+                <button onclick="executeDelete()" class="flex-1 py-2.5 bg-red-500 text-white rounded-xl font-medium hover:bg-red-600 transition-colors shadow-sm">Yes, Remove</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/script.js' %}"></script>
+    <script>
+        let targetStaffId = null;
+        let targetRow = null;
+
+        async function fetchStaff() {
+            const res = await fetch('/api/staff', { headers: {'Authorization': localStorage.getItem('token')} });
+            if(res.status === 401) { logout(); return; }
+            if(res.status === 403) { showToast("You do not have permission to view this."); return; }
+            
+            const staff = await res.json();
+            
+            document.getElementById('staffList').innerHTML = staff.map(s => {
+                const roleBadgeColor = s.role === 'Admin Master' ? 'bg-indigo-50 text-indigo-600' : 'bg-gray-100 text-gray-600';
+                
+                return `
+                <tr class="hover:bg-gray-50 transition-colors group">
+                    <td class="px-6 py-4 flex items-center gap-4">
+                        <div class="h-8 w-8 rounded-full bg-gray-100 flex items-center justify-center font-bold text-gray-600 text-xs">${s.name.charAt(0)}</div>
+                        <div class="font-semibold text-gray-900">${s.name}</div>
+                    </td>
+                    <td class="px-6 py-4 font-medium text-gray-500">@${s.username}</td>
+                    <td class="px-6 py-4">
+                        <span class="px-2.5 py-1 rounded-md text-[11px] font-semibold uppercase tracking-wide ${roleBadgeColor}">
+                            ${s.role}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-right">
+                        <button onclick="triggerDelete(this, ${s.id})" class="p-2 rounded-md text-gray-400 hover:bg-red-50 hover:text-red-600 transition"><i class="ph-bold ph-trash text-lg"></i></button>
+                    </td>
+                </tr>
+            `}).join('');
+
+            applyStaggeredAnimations('#staffList tr');
+        }
+
+        function triggerDelete(btn, staffId) {
+            targetStaffId = staffId;
+            targetRow = btn.closest('tr');
+            toggleModal('deleteModal');
+        }
+
+        function closeDeleteModal() {
+            toggleModal('deleteModal');
+            targetStaffId = null;
+            targetRow = null;
+        }
+
+        async function executeDelete() {
+            if(!targetStaffId) return;
+            closeDeleteModal();
+            targetRow.style.opacity = '0';
+
+            await fetch(`/api/staff/${targetStaffId}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': localStorage.getItem('token') }
+            });
+
+            setTimeout(() => targetRow.remove(), 300);
+            showToast("Team member access revoked.");
+        }
+
+        document.getElementById('addStaffForm').onsubmit = async (e) => {
+            e.preventDefault();
+            const res = await fetch('/api/staff', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'Authorization': localStorage.getItem('token')},
+                body: JSON.stringify({ 
+                    name: document.getElementById('stName').value, 
+                    username: document.getElementById('stUsername').value, 
+                    password: document.getElementById('stPassword').value,
+                    role: document.getElementById('stRole').value
+                })
+            });
+            
+            if(res.status === 400) {
+                const data = await res.json();
+                alert(data.error);
+                return;
+            }
+
+            toggleModal('staffModal');
+            showToast("Team member added successfully!");
+            fetchStaff(); 
+            e.target.reset();
+        };
+
+        fetchStaff();
+    </script>
+</body>
+</html>
